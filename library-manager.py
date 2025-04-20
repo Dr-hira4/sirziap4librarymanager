@@ -1,0 +1,105 @@
+#project 03: library manager sir zia
+
+import json
+import os
+
+data_file = 'library.txt'
+
+def load_library():
+    if os.path.exists(data_file):
+        with open(data_file, 'r') as file:
+            return json.load(file)
+    return[]
+
+def save_library(library):
+    with open(data_file, 'w') as file:
+        json.dump(library, file)
+
+def add_book(library):
+    title = input('enter the title of the book: ')
+    author = input('enter the author of the book: ')
+    year = input('enter the year of the book: ')
+    genre = input('enter the genre of the book: ')
+    read = input('have you rfead the book? (yes/no): ').lower() == 'yes'
+
+    new_book = {
+        'title': title,
+        'author': author,
+        'year': year,
+        'genre': genre,
+        'read': read,
+    }
+
+    library.append(new_book)
+    save_library(library)
+    print(f'book {title} added successfully.')
+
+def remove_book(library):
+    title = input("enter the title book to remove from the library")
+    initial_length = len(library)
+    library = [book for book in library if book['title'].lower() != title]
+    if len(library) < initial_length:
+        save_library(library)
+        print(f'book {title} removed successfully.')
+    else:
+        print(f'book {title} not found in the library.')
+
+def search_library(library):
+    search_by = input("search by title or author").lower()
+    search_term = input(f"enter the {search_by}").lower()
+
+    results = [book for book in library if search_term in book[search_by].lower()]
+
+    if results:
+        for book in results:
+            status = "read" if book['read'] else "unread"
+            print(f"{book['title']} by {book['author']} - {book['year']} - {book['genre']} - {status}")
+    else:
+        print(f"no books found matching '{search_term}' in the {search_by} field.")
+
+def display_all_books(library):
+    if library:
+        for book in library:
+            status = "read" if book['read'] else "unread"
+            print(f"{book['title']} by {book['author']} - {book['year']} - {book['genre']} - {status}")
+    else:
+        print("the library is empty.")
+
+def display_statistics(library):
+    total_books = len(library)
+    read_books = len([book for book in library if book['read']])
+    percentage_read = (read_books / total_books) * 100 if total_books > 0 else 0
+
+    print(f"total books: {total_books}")
+    print(f"percentage read: {percentage_read:.2f}%")
+
+def main():
+    library = load_library()
+    while True:
+        print("welcome to the library manager")
+        print("menu")
+        print("1. add a book")
+        print("2. remove a book")
+        print("3. search the library")
+        print("4. display all books")
+        print("5. display statistics")
+        print("6. exit")
+
+        choice = input("enput your choice: ")
+        if choice == '1':
+            add_book(library)
+        elif choice == '2':
+            remove_book(library)
+        elif choice == '3':
+            search_library(library)
+        elif choice == '4':
+            display_all_books(library)
+        elif choice == '5':
+            display_statistics(library)
+        elif choice == '6':
+            print("goodbye!")
+        else:
+            print("invalid choice, please try again.")
+
+if __name__ == '__main__':
+    main()
